@@ -11,11 +11,6 @@ yarn-error.log*
 # OS files (macOS)
 .DS_Store
 
-# Env files
-.env
-.env.local
-.env.*.local
-
 # Build output
 dist/
 build/
