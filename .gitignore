@@ -29,3 +29,8 @@ coverage/
 
 # TypeScript
 *.tsbuildinfo
+
+# Variables de entorno
+.env
+.env.local
+.env.*.local
