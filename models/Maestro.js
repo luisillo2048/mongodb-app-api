@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
-const teacherSchema = new mongoose.Schema({
+const MaestroSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
@@ -18,7 +18,7 @@ const teacherSchema = new mongoose.Schema({
 });
 
 // Hash de la contraseña antes de guardar
-teacherSchema.pre('save', async function(next) {
+MaestroSchema.pre('save', async function(next) {
   if (this.isModified('password')) {
     this.password = await bcrypt.hash(this.password, 10);
   }
@@ -26,8 +26,8 @@ teacherSchema.pre('save', async function(next) {
 });
 
 // Método para comparar contraseñas
-teacherSchema.methods.comparePassword = async function(candidatePassword) {
+MaestroSchema.methods.comparePassword = async function(candidatePassword) {
   return await bcrypt.compare(candidatePassword, this.password);
 };
 
-module.exports = mongoose.model('Teacher', teacherSchema);
+module.exports = mongoose.model('Maestro', MaestroSchema);

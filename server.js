@@ -28,6 +28,9 @@ app.use('/api/logro', logroRoutes);
 const logrosUnlockedRoutes = require("./routes/logro_unlocked");
 app.use("/logros-unlocked", logrosUnlockedRoutes);
 
+const maestroRoutes = require("./routes/maestros");
+app.use("/api/maestros", maestroRoutes);
+
 
 ////////////////////////Aqui tenemos los endpoints de la ia
 const iaRoutes = require("./routes/ia_routes");
