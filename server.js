@@ -32,6 +32,7 @@ const maestroRoutes = require("./routes/maestros");
 app.use("/api/maestros", maestroRoutes);
 
 
+
 ////////////////////////Aqui tenemos los endpoints de la ia
 const iaRoutes = require("./routes/ia_routes");
 app.use("/api", iaRoutes);
