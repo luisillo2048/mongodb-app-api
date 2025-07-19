@@ -106,7 +106,7 @@ router.post("/:id/responder", authMiddleware, async (req, res) => {
     let siguienteTarea = null;
 
     try {
-      const iaResponse = await axios.post("http://192.168.232.155:3000/predecir", {
+      const iaResponse = await axios.post("http://192.168.1.6:3000/predecir", {
         puntaje: puntajeAsignado,
         correcto: esCorrecta,
         dificultad_actual: tarea.dificultad

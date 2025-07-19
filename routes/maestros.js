@@ -16,7 +16,7 @@ router.post('/', async (req, res) => {
     const maestro = new Maestro({ email, password });
     await maestro.save();
     
-    res.status(201).json({ message: 'Maestro creado exitosamente', teacher });
+    res.status(201).json({ message: 'Maestro creado exitosamente', maestro });
   } catch (error) {
     res.status(500).json({ message: 'Error al crear el maestro', error: error.message });
   }

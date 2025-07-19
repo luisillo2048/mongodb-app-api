@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Tarea = require("./models/Tarea"); // Ajusta la ruta si está en otro lugar
 
-mongoose.connect("mongodb://127.0.0.1:27017/prueba", { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect("mongodb://127.0.0.1:27017/RetoMate", { useNewUrlParser: true, useUnifiedTopology: true });
 
 const tareas = [
   {

@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 // 📌 Conexión a MongoDB
-mongoose.connect('mongodb://localhost:27017/prueba', {
+mongoose.connect('mongodb://localhost:27017/RetoMate', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
