@@ -18,13 +18,17 @@ const router = express.Router();
 router.post("/register", async (req, res) => {
   const { username, email, password, cct, grado, role } = req.body;
   try {
-    let maestro = await Maestro.findOne({ email });
+    let maestro = await Maestro.findOne({ email: email.toLowerCase().trim() });
     if (maestro) return res.status(400).json({ msg: "Maestro ya registrado" });
 
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-
-    maestro = new Maestro({ username, email, password: hashedPassword, cct, grado, role });
+    maestro = new Maestro({ 
+      username, 
+      email: email.toLowerCase().trim(), 
+      password, 
+      cct, 
+      grado, 
+      role 
+    });
     await maestro.save();
 
     res.status(201).json({ msg: "Maestro registrado exitosamente", role: maestro.role });
@@ -38,32 +42,33 @@ router.post("/register", async (req, res) => {
  * Login de maestro
  */
 router.post("/login", async (req, res) => {
-  const { email, password } = req.body;
   try {
+    const email = req.body.email.toLowerCase().trim();
+    const password = req.body.password.trim();
+
     const maestro = await Maestro.findOne({ email });
     if (!maestro) return res.status(400).json({ msg: "Credenciales inválidas" });
 
-    const isMatch = await bcrypt.compare(password, maestro.password);
+    // Usa el método del modelo
+    const isMatch = await maestro.comparePassword(password);
     if (!isMatch) return res.status(400).json({ msg: "Credenciales inválidas" });
 
     const payload = { id: maestro._id, role: "maestro" };
     const token = jwt.sign(payload, process.env.JWT_SECRET || "secretkey", { expiresIn: "1d" });
 
-    let session = await Sesion.findOne({ userId: maestro._id });
-    if (session) {
-      session.token = token;
-      session.createdAt = new Date();
-      await session.save();
-    } else {
-      await new Sesion({ userId: maestro._id, token }).save();
-    }
+    await Sesion.findOneAndUpdate(
+      { userId: maestro._id },
+      { token, createdAt: new Date() },
+      { new: true, upsert: true }
+    );
 
     res.json({ token });
   } catch (error) {
-    console.error(error);
-    res.status(500).send("Error en el servidor");
+    console.error("Error en login:", error);
+    res.status(500).json({ msg: "Error en el servidor" });
   }
 });
+
 
 /**
  * Generar código para usuarios
