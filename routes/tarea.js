@@ -1,14 +1,11 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const router = express.Router();
-const Tarea = require('../models/Tarea');  // Modelo de Tarea
-const Progreso = require('../models/Progreso');  // Modelo de Progreso
+const Tarea = require('../models/Tarea');  
+const Progreso = require('../models/Progreso');  
 const authMiddleware = require('../middlewares/authMiddleware');
-// Importa el modelo
 const LogroUnlocked = require('../models/Logro_unlocked');
 const axios = require("axios");
-
-
 
 // Obtener todas las tareas
 router.get("/alltareas", async (req, res) => {
@@ -35,32 +32,27 @@ router.post("/add", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   try {
     const tarea = await Tarea.findByIdAndDelete(req.params.id);
-    if (!tarea) {
-      return res.status(404).json({ error: "Tarea no encontrada" });
-    }
+    if (!tarea) return res.status(404).json({ error: "Tarea no encontrada" });
     res.json({ message: "Tarea eliminada correctamente" });
   } catch (error) {
     res.status(500).json({ error: "No se pudo eliminar la tarea" });
   }
 });
 
-
 // Responder a una tarea y guardar el progreso
-
 router.post("/:id/responder", authMiddleware, async (req, res) => {
   try {
     const { respuesta, id_sesion } = req.body;
     const { id } = req.params;
-    const id_usuario = req.user.user.id;
+    const id_usuario = req.user._id; // 🔹 Aquí estaba el error, ahora correcto
 
+    // Validar ObjectId
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ error: "ID de tarea no válido" });
     }
 
     const tarea = await Tarea.findById(id);
-    if (!tarea) {
-      return res.status(404).json({ error: "Tarea no encontrada" });
-    }
+    if (!tarea) return res.status(404).json({ error: "Tarea no encontrada" });
 
     const esCorrecta = tarea.respuestaCorrecta === respuesta;
     const puntajeAsignado = esCorrecta ? tarea.puntaje : 0;
@@ -106,19 +98,16 @@ router.post("/:id/responder", authMiddleware, async (req, res) => {
     let siguienteTarea = null;
 
     try {
-      const iaResponse = await axios.post("http://192.168.1.6:3000/predecir", {
+      const iaResponse = await axios.post("http://192.168.1.13:3000/predecir", {
         puntaje: puntajeAsignado,
         correcto: esCorrecta,
         dificultad_actual: tarea.dificultad
       }, {
-        headers: {
-          "Content-Type": "application/json"
-        }
+        headers: { "Content-Type": "application/json" }
       });
 
       dificultadSugerida = iaResponse.data.dificultad_sugerida;
 
-      // 🎯 Buscar siguiente tarea en el mismo bloque y con dificultad sugerida
       const tareasRespondidas = await Progreso.find({ id_usuario }).distinct("id_tarea");
 
       siguienteTarea = await Tarea.findOne({
@@ -128,7 +117,7 @@ router.post("/:id/responder", authMiddleware, async (req, res) => {
       });
 
     } catch (iaError) {
-      console.error("Error al llamar a la IA o al buscar siguiente tarea:", iaError.message);
+      console.error("Error IA o siguiente tarea:", iaError.message);
     }
 
     res.json({
@@ -137,7 +126,7 @@ router.post("/:id/responder", authMiddleware, async (req, res) => {
       progreso: nuevoProgreso,
       logroDesbloqueado,
       siguiente_dificultad: dificultadSugerida,
-      siguiente_tarea: siguienteTarea // 👈 Aquí va la siguiente tarea recomendada
+      siguiente_tarea: siguienteTarea
     });
 
   } catch (error) {
@@ -146,14 +135,10 @@ router.post("/:id/responder", authMiddleware, async (req, res) => {
   }
 });
 
-
 // Obtener tareas por bloque
 router.get("/tareas/bloque/:bloque", async (req, res) => {
   const bloque = parseInt(req.params.bloque);
-
-  if (isNaN(bloque)) {
-    return res.status(400).json({ error: "Bloque inválido. Debe ser un número." });
-  }
+  if (isNaN(bloque)) return res.status(400).json({ error: "Bloque inválido. Debe ser un número." });
 
   try {
     const tareasPorBloque = await Tarea.find({ bloque });
@@ -162,6 +147,5 @@ router.get("/tareas/bloque/:bloque", async (req, res) => {
     res.status(500).json({ error: "Error al obtener las tareas por bloque." });
   }
 });
-
 
 module.exports = router;
