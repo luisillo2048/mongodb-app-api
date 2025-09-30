@@ -12,11 +12,11 @@ const TareaSchema = new mongoose.Schema({
         trim: true
     },
     opciones: {
-        type: [String], // Un array de strings para las opciones
+        type: [String], 
         required: true,
         validate: {
             validator: function (arr) {
-                return arr.length >= 2; // Asegura que haya al menos 2 opciones
+                return arr.length >= 2; 
             },
             message: "Debe haber al menos dos opciones."
         }
@@ -34,12 +34,12 @@ const TareaSchema = new mongoose.Schema({
     puntaje: {
         type: Number,
         required: true,
-        min: 1 // Asegura que el puntaje sea positivo
+        min: 1 
     },
     bloque: {
         type: Number,
         required: true,
-        enum: [1, 2, 3, 4, 5, 6], // opcional: restringe a los 6 bloques
+        enum: [1, 2, 3, 4, 5, 6], 
     },
     dificultad: {
         type: String,

@@ -42,11 +42,10 @@ router.delete("/:id", async (req, res) => {
 // Responder a una tarea y guardar el progreso
 router.post("/:id/responder", authMiddleware, async (req, res) => {
   try {
-    const { respuesta, id_sesion } = req.body;
+    const { respuesta } = req.body;
     const { id } = req.params;
-    const id_usuario = req.user._id; // 🔹 Aquí estaba el error, ahora correcto
+    const id_usuario = req.user._id;
 
-    // Validar ObjectId
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ error: "ID de tarea no válido" });
     }
@@ -60,7 +59,6 @@ router.post("/:id/responder", authMiddleware, async (req, res) => {
     const nuevoProgreso = new Progreso({
       id_usuario,
       id_tarea: id,
-      id_sesion,
       puntaje: puntajeAsignado,
       correcto: esCorrecta,
       fecha_progreso: new Date()
@@ -98,7 +96,7 @@ router.post("/:id/responder", authMiddleware, async (req, res) => {
     let siguienteTarea = null;
 
     try {
-      const iaResponse = await axios.post("http://192.168.1.13:3000/predecir", {
+      const iaResponse = await axios.post("http://192.168.1.17:3000/predecir", {
         puntaje: puntajeAsignado,
         correcto: esCorrecta,
         dificultad_actual: tarea.dificultad

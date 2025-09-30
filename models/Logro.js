@@ -12,7 +12,7 @@ const LogroSchema = new mongoose.Schema({
     },
     icon: {
         type: String,
-        required: false // Puedes poner `false` si quieres que sea opcional
+        required: false 
     }
 });
 
