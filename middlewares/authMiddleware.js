@@ -24,8 +24,8 @@ const authMiddleware = async (req, res, next) => {
       return res.status(404).json({ error: "Usuario/Maestro no encontrado" });
     }
 
-    req.user = currentUser; // 👈 siempre disponible en rutas
-    req.role = decoded.role; // opcional, por si quieres validar roles
+    req.user = currentUser; 
+    req.role = decoded.role; 
 
     next();
   } catch (error) {

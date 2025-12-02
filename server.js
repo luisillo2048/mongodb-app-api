@@ -31,6 +31,9 @@ app.use("/logros-unlocked", logrosUnlockedRoutes);
 const maestroRoutes = require("./routes/maestros");
 app.use("/api/maestros", maestroRoutes);
 
+const adminRoutes = require("./routes/admin");
+app.use("/admin", adminRoutes);
+
 // Endpoints de IA
 const iaRoutes = require("./routes/ia_routes");
 app.use("/api", iaRoutes);
